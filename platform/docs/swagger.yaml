@@ -1,0 +1,390 @@
+basePath: /
+definitions:
+  models.AddUserToHomeRequest:
+    properties:
+      home_id:
+        type: integer
+      role:
+        type: string
+      user_id:
+        type: integer
+    type: object
+  models.ApiResponse:
+    properties:
+      error:
+        type: string
+      message:
+        type: string
+      token:
+        type: string
+    type: object
+  models.AssignDeviceRequest:
+    properties:
+      device_id:
+        type: string
+      home_id:
+        type: integer
+    type: object
+  models.Device:
+    properties:
+      channel_id:
+        type: string
+      created_at:
+        type: string
+      device_id:
+        type: string
+      home_id:
+        type: integer
+      id:
+        type: integer
+      is_active:
+        type: boolean
+      location:
+        type: string
+      production_date:
+        type: string
+      user_id:
+        type: integer
+      warranty:
+        type: integer
+    type: object
+  models.Home:
+    properties:
+      created_at:
+        type: string
+      home_name:
+        type: string
+      id:
+        type: integer
+      user_id:
+        type: integer
+    type: object
+  models.User:
+    properties:
+      email:
+        type: string
+      id:
+        type: integer
+      password_hash:
+        type: string
+      username:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: This is a generated API documentation for the Pragati IoT Platform.
+  title: Pragati IoT Platform API
+  version: "1.0"
+paths:
+  /auth/device:
+    post:
+      consumes:
+      - application/json
+      description: Adds a new device to the system
+      parameters:
+      - description: Device Info
+        in: body
+        name: device
+        required: true
+        schema:
+          $ref: '#/definitions/models.Device'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Device added successfully
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Invalid request payload
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Failed to add device
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Add a device
+      tags:
+      - devices
+  /auth/device-analytics:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves analytics for a specific device within a specified home,
+        including usage statistics or other relevant data.
+      parameters:
+      - description: Device ID required for fetching analytics
+        in: query
+        name: device_id
+        required: true
+        type: string
+      - description: Home ID required for contextual analytics within a specific home
+        in: query
+        name: home_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Analytics data for the specified device within the given home.
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Invalid home or device ID provided.
+          schema:
+            $ref: '#/definitions/models.ApiResponse'
+        "401":
+          description: Unauthorized access attempt detected.
+          schema:
+            $ref: '#/definitions/models.ApiResponse'
+        "500":
+          description: Internal server error while retrieving device analytics.
+          schema:
+            $ref: '#/definitions/models.ApiResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get device analytics
+      tags:
+      - analytics
+  /auth/device/assign-home:
+    post:
+      consumes:
+      - application/json
+      description: Assigns a device to a specified home
+      parameters:
+      - description: Device and Home IDs
+        in: body
+        name: req
+        required: true
+        schema:
+          $ref: '#/definitions/models.AssignDeviceRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Device assigned to home successfully
+          schema:
+            $ref: '#/definitions/models.ApiResponse'
+        "400":
+          description: Invalid request payload
+          schema:
+            $ref: '#/definitions/models.ApiResponse'
+        "500":
+          description: Failed to assign device to home
+          schema:
+            $ref: '#/definitions/models.ApiResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Assign device to home
+      tags:
+      - devices
+  /auth/device/list:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves devices associated with a specific user ID, returning
+        a list of devices.
+      parameters:
+      - description: User ID
+        in: query
+        name: user_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of devices associated with the user ID
+          schema:
+            items:
+              $ref: '#/definitions/models.Device'
+            type: array
+        "400":
+          description: Invalid user ID provided
+          schema:
+            $ref: '#/definitions/models.ApiResponse'
+        "500":
+          description: Failed to retrieve devices due to server error
+          schema:
+            $ref: '#/definitions/models.ApiResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get devices by user ID
+      tags:
+      - devices
+  /auth/home:
+    post:
+      consumes:
+      - application/json
+      description: Adds a new home to the system
+      parameters:
+      - description: Home Info
+        in: body
+        name: home
+        required: true
+        schema:
+          $ref: '#/definitions/models.Home'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Home added successfully
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Invalid request payload
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Failed to add home
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Add a home
+      tags:
+      - homes
+  /auth/home/add-user:
+    post:
+      consumes:
+      - application/json
+      description: Adds a user to a home with a specific role
+      parameters:
+      - description: Home and User Info
+        in: body
+        name: req
+        required: true
+        schema:
+          $ref: '#/definitions/models.AddUserToHomeRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User added to home successfully
+          schema:
+            $ref: '#/definitions/models.ApiResponse'
+        "400":
+          description: Invalid request payload
+          schema:
+            $ref: '#/definitions/models.ApiResponse'
+        "500":
+          description: Failed to add user to home
+          schema:
+            $ref: '#/definitions/models.ApiResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Add user to home
+      tags:
+      - homes
+  /auth/home/list:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves homes associated with a specific user ID
+      parameters:
+      - description: User ID
+        in: query
+        name: user_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of homes associated with the user ID
+          schema:
+            items:
+              $ref: '#/definitions/models.Home'
+            type: array
+        "400":
+          description: Invalid user ID provided
+          schema:
+            $ref: '#/definitions/models.ApiResponse'
+        "500":
+          description: Failed to retrieve homes due to a server error
+          schema:
+            $ref: '#/definitions/models.ApiResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get homes by user ID
+      tags:
+      - homes
+  /login:
+    post:
+      consumes:
+      - application/json
+      description: Login with username and password to receive a token
+      parameters:
+      - description: User Credentials
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'message": "Login successful", "token": "JWT_TOKEN'
+          schema:
+            $ref: '#/definitions/models.ApiResponse'
+        "400":
+          description: Invalid request payload
+          schema:
+            $ref: '#/definitions/models.ApiResponse'
+        "401":
+          description: Invalid username or password
+          schema:
+            $ref: '#/definitions/models.ApiResponse'
+      summary: User login
+      tags:
+      - users
+  /register:
+    post:
+      consumes:
+      - application/json
+      description: Register a new user with username, password, and email
+      parameters:
+      - description: User Info
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.User'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: User registered successfully with token
+          schema:
+            $ref: '#/definitions/models.ApiResponse'
+        "400":
+          description: Invalid request payload
+          schema:
+            $ref: '#/definitions/models.ApiResponse'
+        "500":
+          description: Failed to register user or hash password
+          schema:
+            $ref: '#/definitions/models.ApiResponse'
+      tags:
+      - users
+schemes:
+- http
+swagger: "2.0"
